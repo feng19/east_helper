@@ -6,8 +6,7 @@
     make_binary_tree/1,
     format_function_value/1,
     format_function_value_new_line/1,
-    format_function_value_new_line_tree/1,
-    add_is_last/1
+    format_function_value_new_line_tree/1
 ]).
 
 %%====================================================================
@@ -37,11 +36,6 @@ format_function_value_new_line_tree(SyntaxTree) ->
         [32 | IoList3] -> % Space
             unicode:characters_to_binary(IoList3)
     end.
-
-add_is_last([]) -> [];
-add_is_last(List) ->
-    [H | T] = lists:reverse(List),
-    lists:reverse([[{is_last, true} | H] | T]).
 
 %%====================================================================
 %% Internal functions
