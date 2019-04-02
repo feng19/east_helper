@@ -3,6 +3,7 @@
 
 %% API
 -export([
+    gen_function/2,
     gen_function/3,
     gen_function/5
 ]).
@@ -21,28 +22,32 @@
 
 %% @doc code gen weight list string
 %% example 1:
-%% ``` e.g. gen_function(test, '>=', [{[], [{1, 50}, {2, 30}, {3, 20}]}]) =>
+%% ``` e.g. gen_function(test, '=<', [{[], [{1, 50}, {2, 30}, {3, 20}]}]) =>
 %% "test() ->
 %%    case rand:uniform(100) of
-%%      Random when Random >= 50 -> 1;
-%%      Random when Random >= 80 -> 2;
+%%      Random when Random =< 50 -> 1;
+%%      Random when Random =< 80 -> 2;
 %%      _ -> 3
 %%    end." '''
 %% example 2:
-%% ``` e.g. gen_function(test, '>=', [{[a], [{1, 50}, {2, 30}, {3, 20}]}, {[b], [{1, 30}, {2, 30}, {3, 40}]}]) =>
+%% ``` e.g. gen_function(test, '=<', [{[a], [{1, 50}, {2, 30}, {3, 20}]}, {[b], [{1, 30}, {2, 30}, {3, 40}]}]) =>
 %% "test(a) ->
 %%    case rand:uniform(100) of
-%%      Random when Random >= 50 -> 1;
-%%      Random when Random >= 80 -> 2;
+%%      Random when Random =< 50 -> 1;
+%%      Random when Random =< 80 -> 2;
 %%      _ -> 3
 %%    end;
 %%  test(b) ->
 %%    case rand:uniform(100) of
-%%      Random when Random >= 30 -> 1;
-%%      Random when Random >= 60 -> 2;
+%%      Random when Random =< 30 -> 1;
+%%      Random when Random =< 60 -> 2;
 %%      _ -> 3
 %%    end." '''
 %% @end
+
+-spec gen_function(function_name(), args_weight_list()) -> string().
+gen_function(FunctionName, List) ->
+    gen_function(FunctionName, '=<', List).
 -spec gen_function(function_name(), operator(), args_weight_list()) -> string().
 gen_function(FunctionName, Op, List) ->
     gen_function(FunctionName, Op, List, rand, uniform).
@@ -76,9 +81,7 @@ function_body(WeightList, Op, RandMod, RandFun) ->
             error({must_gt_then_one, Max});
         _ -> ok
     end,
-    [
-        ?cases(?apply(RandMod, RandFun, [?abstract(Max)]), Clauses)
-    ].
+    [?cases(?apply(RandMod, RandFun, [?abstract(Max)]), Clauses)].
 
 clauses_forms(WeightList, Op) ->
     clauses_forms_do(WeightList, Op, 0, []).

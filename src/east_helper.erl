@@ -4,9 +4,8 @@
 %% API exports
 -export([
     make_binary_tree/1,
-    format_function_value/1,
-    format_function_value_new_line/1,
-    format_function_value_new_line_tree/1
+    format_function_value/1, format_function_value_tree/1,
+    format_function_value_new_line/1, format_function_value_new_line_tree/1
 ]).
 
 %%====================================================================
@@ -17,7 +16,9 @@ make_binary_tree(UnicodeList) ->
     erl_syntax:binary([erl_syntax:binary_field(?string(UnicodeList), [?abstract('utf8')])]).
 
 format_function_value(Value) ->
-    IoList = erl_prettypr:format(?abstract(Value), [{paper, 100}, {ribbon, 80}]),
+    format_function_value_tree(?abstract(Value)).
+format_function_value_tree(SyntaxTree) ->
+    IoList = erl_prettypr:format(SyntaxTree, [{paper, 100}, {ribbon, 80}]),
     unicode:characters_to_binary(IoList).
 
 format_function_value_new_line(Value) ->
